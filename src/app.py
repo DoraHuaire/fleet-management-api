@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 
-# Importar los módulos
+# Importar las rutas
 from routes import *
 
 if __name__ == '__main__':

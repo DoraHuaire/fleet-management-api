@@ -15,13 +15,3 @@ def get_taxis():
     
     return jsonify(taxis_list)
 
-# Define el endpoint /trayectoias
-@app.route('/trajectories', methods=['GET'])
-def get_trajectories():
-    
-    taxiId = request.args.get('taxiId')
-    date = request.args.get('date')
-    
-    trajectories_list = get_filtered_trajectories(taxiId, date)
-    
-    return jsonify(trajectories_list)

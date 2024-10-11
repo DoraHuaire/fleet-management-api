@@ -1,5 +1,6 @@
 from src.database.db import db 
 
+
 #Tabla trayectorias
 class Trajectories(db.Model):
     
@@ -11,7 +12,9 @@ class Trajectories(db.Model):
     
     def convert_to_dictionary(self):
         return {
+            'id': self.id,
+            'taxi_id': self.taxi_id,
+            'date': self.date.strftime("%Y-%m-%d %H:%M:%S"),
             'latitude': self.latitude,
-            'longitude': self.longitude,
-            'timestamp': self.date
+            'longitude': self.longitude
         }

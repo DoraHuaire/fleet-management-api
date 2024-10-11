@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from src.services.trajectories_services import get_filtered_trajectories
+from datetime import datetime
 
 trajectories_bp = Blueprint('trajectories', __name__)  
 
@@ -10,8 +11,17 @@ def get_trajectories():
     taxiId = request.args.get('taxiId')
     date = request.args.get('date')
     
-    if not taxiId or not date:
-        return jsonify({"error": "taxiId y date son obligatorios"}), 400
+    if taxiId:
+        try:
+            taxiId = int(taxiId)
+        except ValueError:
+            return jsonify({"error": "taxiId debe ser un número"}), 400
+        
+    if date:
+        try:
+            date = datetime.strptime(date, '%Y-%m-%d')
+        except ValueError:
+            return jsonify({"error": "La fecha debe estar en formato YYYY-MM-DD"}), 400
     
     trajectories_list = get_filtered_trajectories(taxiId, date)
     

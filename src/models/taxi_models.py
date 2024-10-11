@@ -8,5 +8,5 @@ class Taxis(db.Model):
     def convert_to_dictionary(self):
         return {
             'id': self.id,
-            'plate': self.plate
+            'plate': str(self.plate)
         }

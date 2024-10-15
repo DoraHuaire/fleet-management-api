@@ -1,29 +1,28 @@
-from flask import Blueprint, request, jsonify
-from src.services.trajectories_services import get_filtered_trajectories
+from flask import request, jsonify
+from models.trajectories_models import get_filtered_trajectories
 from datetime import datetime
 
-trajectories_bp = Blueprint('trajectories', __name__)  
-
+def init_routes_trajectories(app):
 # Define el endpoint /trayectoias
-@trajectories_bp.route('/trajectories', methods=['GET'])
-def get_trajectories():
-    # Obtener los parámetros de la solicitud
-    taxiId = request.args.get('taxiId')
-    date = request.args.get('date')
-    
-    if taxiId:
-        try:
-            taxiId = int(taxiId)
-        except ValueError:
-            return jsonify({"error": "taxiId debe ser un número"}), 400
+    @app.route('/trajectories', methods=['GET'])
+    def get_trajectories():
+        # Obtener los parámetros de la solicitud
+        taxiId = request.args.get('taxiId')
+        date = request.args.get('date')
         
-    if date:
+        if not taxiId:
+           return jsonify({"error": "El ID del taxi es obligatorio"}), 400
+
+        if not date:
+           return jsonify({"error": "La fecha es obligatoria"}), 400
+         
         try:
-            date = datetime.strptime(date, '%Y-%m-%d')
+            date = datetime.strptime(date, '%d-%m-%Y')
         except ValueError:
-            return jsonify({"error": "La fecha debe estar en formato YYYY-MM-DD"}), 400
+            return jsonify({"error": "Fecha invalida, por favor usa el formato DD-MM-YYYY"}), 400
     
-    trajectories_list = get_filtered_trajectories(taxiId, date)
-    
-    return jsonify(trajectories_list)
+        
+        trajectories_list = get_filtered_trajectories(taxiId, date)
+        
+        return jsonify(trajectories_list)
 

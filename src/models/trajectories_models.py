@@ -1,34 +1,40 @@
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import cast, Time
-from datetime import datetime
-from flask import jsonify
 from database.db import db
+from sqlalchemy import func
+from datetime import datetime
 
 #Tabla trayectorias
 class Trajectories(db.Model):
-    
+
     id = db.Column(db.Integer, primary_key=True)
-    taxi_id = db.Column(db.Integer, nullable=False)
-    date = db.Column(db.DateTime, nullable=False)
-    latitude = db.Column(db.Float, nullable=False)
-    longitude = db.Column(db.Float, nullable=False)
-    
-    def convert_to_dictionary(self):
+    taxi_id = db.Column(db.Integer, db.ForeignKey('taxis.id'))
+    date = db.Column(db.DateTime)
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
+
+    def convert_to_dict(self):
         return {
-            'id': self.id,
-            'taxi_id': self.taxi_id,
-            'date': self.date.strftime("%d-%m-%Y %H:%M:%S"),
-            'latitude': self.latitude,
-            'longitude': self.longitude
+            "id": self.id,
+            "taxiId": self.taxi_id,
+            "date": self.date,
+            "latitude": self.latitude,
+            "longitude": self.longitude
         }
 
-def get_filtered_trajectories(taxiId, date):
-    query = Trajectories.query
-     # Filtrar por taxiId si se proporciona
-    if taxiId:
-        query = query.filter(Trajectories.taxi_id == taxiId)
-    if date:
-        query = query.filter(Trajectories.date == date)
-        
-    trajectories = query.all()
-    return [trajectory.convert_to_dictionary() for trajectory in trajectories]
+def get_filtered_trajectories(taxi_id, date_str):
+    query = db.session.query(Trajectories)
+    
+    try:
+        date = datetime.strptime(date_str, '%d-%m-%Y')  
+    except ValueError:
+        return None, "Formato de fecha inválido. Usa el formato DD-MM-YYYY" 
+    
+    # Filtrar por taxi_id y fecha
+    # Comparar solo la fecha sin la hora
+    trajectories = query.filter(
+        Trajectories.taxi_id == taxi_id,
+        func.date(Trajectories.date) == date.date()  
+    ).all()
+
+    return [trajectory.convert_to_dict() for trajectory in trajectories], None
+
+ 

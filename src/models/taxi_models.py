@@ -12,16 +12,15 @@ class Taxis(db.Model):
             'plate': str(self.plate)
         }
         
-def get_filtered_taxis(plate, page, per_page, limit):
+def get_filtered_taxis(id, plate, page, per_page, limit):
     query = Taxis.query
+# Filtramos por ID, si se especifica
+    if id:
+       query = query.filter(Taxis.id == id)
     
-# Filtrar por plate, si se especifica
+# Filtramos por plate, si se especifica
     if plate:
-        query = query.filter(Taxis.plate.ilike(f"%{plate}%"))
-    
-# ajustamos los límites
-    if limit < 1 or limit > 10:
-        limit = per_page
+       query = query.filter(Taxis.plate.ilike(f"%{plate}%"))
 
 # aplicamos la paginación y definimos límites
     taxis = query.offset((page - 1) * per_page).limit(limit).all()

@@ -1,12 +1,10 @@
 from flask import request, jsonify
-from models.trajectories_models import get_filtered_trajectories
-from datetime import datetime
-#from models.trajectories_models import taxi_exists
+from models.users_models import get_filtered_users
 
-def init_routes_trajectories(app):
+def init_routes_users(app):
 # Define el endpoint /trayectoias
-    @app.route('/trajectories', methods=['GET'])
-    def get_trajectories():
+    @app.route('/users', methods=['GET'])
+    def get_users():
         # Obtenemos los parámetros de la solicitud
         taxi_id = request.args.get('taxiId')
         date = request.args.get('date')
@@ -29,5 +27,3 @@ def init_routes_trajectories(app):
            return jsonify({"error": "No se encontraron trayectorias para el taxi y fecha proporcionados"}), 404
         
         return jsonify(trajectories_list), 200
-    
-        

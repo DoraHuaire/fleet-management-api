@@ -1,9 +1,7 @@
 from database.db import db
-from sqlalchemy import func
-from datetime import datetime
 
 #Tabla trayectorias
-class Trajectories(db.Model):
+class Users(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     taxi_id = db.Column(db.Integer, db.ForeignKey('taxis.id'))

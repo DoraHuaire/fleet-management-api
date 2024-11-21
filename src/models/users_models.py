@@ -1,38 +1,48 @@
 from database.db import db
+from flask import jsonify
 
 #Tabla trayectorias
 class Users(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    taxi_id = db.Column(db.Integer, db.ForeignKey('taxis.id'))
-    date = db.Column(db.DateTime)
-    latitude = db.Column(db.Float)
-    longitude = db.Column(db.Float)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False, unique=True)
+    password = db.Column(db.String(100), nullable=False) 
+    rol = db.Column(db.String, nullable=False)
 
-    def convert_to_dict(self):
+    def convert_to_dictionary(self):
         return {
             "id": self.id,
-            "taxiId": self.taxi_id,
-            "date": self.date,
-            "latitude": self.latitude,
-            "longitude": self.longitude
+            "name": self.name,
+            "email": self.email,
+            "rol" : self.rol
         }
 
-def get_filtered_trajectories(taxi_id, date_str):
-    query = db.session.query(Trajectories)
-    
-    try:
-        date = datetime.strptime(date_str, '%d-%m-%Y')  
-    except ValueError:
-        return None, "Formato de fecha inválido. Usa el formato DD-MM-YYYY" 
-    
-    # Filtrar por taxi_id y fecha
-    # Comparar solo la fecha sin la hora
-    trajectories = query.filter(
-        Trajectories.taxi_id == taxi_id,
-        func.date(Trajectories.date) == date.date()  
-    ).all()
+def get_filtered_users(page, per_page, limit):
+    query = db.session.query(Users)
+    users = query.offset((page - 1) * per_page).limit(limit).all()
+# convertimos users a diccionarios
+    return [user.convert_to_dictionary() for user in users]
 
-    return [trajectory.convert_to_dict() for trajectory in trajectories], None
+def connection_db_create_user(user_data):
+    # Obtenemos datos del usuario
+    name = user_data.get('name')
+    email = user_data.get('email')
+    password = user_data.get('password')
+    rol = user_data.get('rol')
+    
+    #Verificamos que los campos necesarios están presentes
+    if not all([name, email, password, rol]):
+        return jsonify({'error': 'Faltan campos necesarios'}), 400
 
- 
+    # Creamos el nuevo usuario
+    new_user = Users(name=name, email=email, password=password, rol=rol)
+    db.session.add(new_user)
+    db.session.commit()
+
+    # Respondemos con id, name, email y el código 201
+    return jsonify({
+        'id': new_user.id,
+        'name': new_user.name,
+        'email': new_user.email
+    }), 201

@@ -30,10 +30,10 @@ def get_latest_trajectories():
     # Convertir los resultados a una lista de diccionarios con los nombres que el test espera
     latest_trajectories_dict = [
         {
-            'id': row.id,  # Taxis
-            'plate': row.plate,  # taxi
-            'taxiId': row.taxi_id,  # Cambiar el nombre a taxiId 
-            'timestamp': row.date.strftime("%Y-%m-%d %H:%M:%S"),  # Cambiar el nombre a timestamp 
+            'id': row.id,  
+            'plate': row.plate,  
+            'taxiId': row.taxi_id,  
+            'timestamp': row.date.strftime("%Y-%m-%d %H:%M:%S"), 
             'latitude': row.latitude,
             'longitude': row.longitude
         }

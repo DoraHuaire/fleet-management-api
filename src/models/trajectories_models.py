@@ -36,5 +36,3 @@ def get_filtered_trajectories(taxi_id, date_str):
     ).all()
 
     return [trajectory.convert_to_dict() for trajectory in trajectories], None
-
- 
